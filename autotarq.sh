@@ -32,14 +32,14 @@ while IFS= read -r line
 do
 	cd "$line"
 	#Find header files
-	find -maxdepth 1 -type f -name "P*.7_c0.shf" > shffiles.txt
+	find -maxdepth 1 -type f -name "P*.7" > shffiles.txt
 	while IFS= read -r line2
 	do
 		if ! grep -q 'num_pts    12' "$line2"; #Ignore CSI data
 		then
-			pfile=${line2:2:-9}
+			pfile=${line2:2:-2}
 			echo $line $pfile
-			tarquin --input ${pfile}.7_c0.shf --output_pdf ${pfile}_analysis.pdf --output_txt ${pfile}_analysis.txt ###Tarquin command line###
+			tarquin --input ${pfile}.7 --format ge --output_pdf ${pfile}_analysis.pdf --output_txt ${pfile}_analysis.txt ###Tarquin command line###
 			cat ${pfile}_analysis.txt | tr -s '[:blank:]' ',' > tmp.txt
 			awk '/^$/{exit} {print $0}' tmp.txt > ${pfile}_analysis.csv
 			sed -i -e '1,2d' ${pfile}_analysis.csv
@@ -54,7 +54,7 @@ do
 			cat "${pfile}_analysis.csv" >> ../"${csvfile}".csv
 		fi
 	done < "./shffiles.txt"
-	#rm shffiles.txt
+	rm shffiles.txt
 	cd ..
 done < "./directories.txt"
 
